@@ -74,9 +74,13 @@ public interface AssemblaConstants {
 	 */
 	String TICKET_BY_NUMBER = "/spaces/%s/tickets/%d.json";
 	/**
-	 * URI for retreiving tickets by milestone
+	 * URI for retreiving tickets by no milestone
 	 */
 	String TICKETS_BY_NO_MILESTONE = "/spaces/%s/tickets/no_milestone.json";
+	/**
+	 * URI for retreiving tickets by milestone
+	 */
+	String TICKETS_BY_MILESTONE = "/spaces/%s/tickets/milestone/%d.json";
 	/**
 	 * URI for retreiving full ticket list
 	 */

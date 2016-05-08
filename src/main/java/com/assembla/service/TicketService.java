@@ -37,6 +37,12 @@ public class TicketService extends AbstractBaseService {
 		PagedAssemblaRequest request = new PagedAssemblaRequest(uri, Ticket[].class);
 		return new PagedIterator<>(request, client);
 	}
+	
+	public PagedIterator<Ticket> getTicketsByMilestone(int milestoneId) {
+		String uri = format(AssemblaConstants.TICKETS_BY_MILESTONE, super.getSpaceId(), milestoneId);
+		PagedAssemblaRequest request = new PagedAssemblaRequest(uri, Ticket[].class);
+		return new PagedIterator<>(request, client);
+	}
 
 	public PagedIterator<Ticket> getAllTickets() {
 		String uri = format(AssemblaConstants.TICKETS_BY_SPACE, super.getSpaceId());
