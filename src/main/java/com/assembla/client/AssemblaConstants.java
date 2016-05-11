@@ -80,7 +80,7 @@ public interface AssemblaConstants {
 	/**
 	 * URI for retreiving tickets by milestone
 	 */
-	String TICKETS_BY_MILESTONE = "/spaces/%s/tickets/milestone/%d.json";
+	String TICKETS_BY_MILESTONE = "/spaces/%s/tickets/milestone/%s.json";
 	/**
 	 * URI for retreiving full ticket list
 	 */
