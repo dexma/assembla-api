@@ -15,7 +15,35 @@ import com.assembla.client.PagedIterator;
 import com.assembla.utils.ObjectUtils;
 
 public class TicketService extends AbstractBaseService {
+	
+	public enum TicketStatusFilter {
+		ALL,ACTIVE,CLOSED
+	}
+	
+	public enum TicketReport {
+		ALL(0),
+		ACTIVE_SORT_BY_MILESTONE(1),
+		ACTIVE_SORT_BY_COMPONENT(2),
+		ACTIVE_SORT_BY_USER(3),
+		CLOSED_SORT_BY_MILESTONE(4),
+		CLOSED_SORT_BY_COMPONENT(5),
+		CLOSED_SORT_BY_USER(6),
+		ALL_BY_AUTH_USER(7),
+		ACTIVE_BY_AUTH_USER(8),
+		CLOSED_BY_AUTH_USER(9),
+		ALL_FOLLOWED_BY_AUTH_USER(10);
+		
+		private TicketReport(int reportId) {
+			this.reportId = reportId;
+		}
 
+		private int reportId;
+		
+		public int getReportId() {
+			return this.reportId;
+		}
+	}
+	
 	public TicketService(AssemblaClient assemblaClient, String spaceId) {
 		super(assemblaClient, spaceId);
 	}
@@ -43,10 +71,26 @@ public class TicketService extends AbstractBaseService {
 		PagedAssemblaRequest request = new PagedAssemblaRequest(uri, Ticket[].class);
 		return new PagedIterator<>(request, client);
 	}
+	
+	//TODO: add test
+	public PagedIterator<Ticket> getTicketsByMilestone(String milestoneId, TicketStatusFilter filter) {
+		String uri = format(AssemblaConstants.TICKETS_BY_MILESTONE, super.getSpaceId(), milestoneId);
+		PagedAssemblaRequest request = new PagedAssemblaRequest(uri, Ticket[].class);
+		request.addParam(AssemblaConstants.TICKET_STATUS_PARAMETER, filter.toString());
+		return new PagedIterator<>(request, client);
+	}
 
 	public PagedIterator<Ticket> getAllTickets() {
 		String uri = format(AssemblaConstants.TICKETS_BY_SPACE, super.getSpaceId());
 		PagedAssemblaRequest request = new PagedAssemblaRequest(uri, Ticket[].class);
+		return new PagedIterator<>(request, client);
+	}
+	
+	//TODO: add test
+	public PagedIterator<Ticket> getAllTickets(TicketReport report) {
+		String uri = format(AssemblaConstants.TICKETS_BY_SPACE, super.getSpaceId());
+		PagedAssemblaRequest request = new PagedAssemblaRequest(uri, Ticket[].class);
+		request.addParam(AssemblaConstants.REPORT_PARAMETER, report.getReportId());
 		return new PagedIterator<>(request, client);
 	}
 

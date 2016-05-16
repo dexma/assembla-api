@@ -38,12 +38,13 @@ public  final class PagedAssemblaRequest extends AssemblaRequest {
 		.append(pageSize)
 		.toString();
 		
-		String parameters = super.buildParameters();
-		if(parameters.isEmpty()) {
-			return "?" + pagingParameters;
+		String urlParameters = super.buildParameters();
+		if(urlParameters.isEmpty()) {
+			urlParameters += "?";
 		}else {
-			return "&" + pagingParameters;
+			urlParameters += "&" ;
 		}
+		return urlParameters += pagingParameters;
 	}
 
 	@Override

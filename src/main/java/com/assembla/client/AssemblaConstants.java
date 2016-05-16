@@ -59,7 +59,7 @@ public interface AssemblaConstants {
 	/**
 	 * Default page size when making request which returns paginated results
 	 */
-	int DEFAULT_PAGE_SIZE = 25;
+	int DEFAULT_PAGE_SIZE = 100;
 	/**
 	 * Media Type for JSON
 	 */
@@ -250,4 +250,8 @@ public interface AssemblaConstants {
 	 * URI for adding a new space tool to a space
 	 */
 	String SPACE_TOOLS_ADD = "/spaces/%s/space_tools/%d/add.json";
+	
+	String REPORT_PARAMETER = "report";
+	
+	String TICKET_STATUS_PARAMETER = "ticket_status";
 }

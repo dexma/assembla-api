@@ -104,10 +104,11 @@ public class AssemblaClient  {
 		Optional<Class<?>> type = request.getType();
 		Reader charStream = null;
 		try {
+			System.out.println("Making request:"+httpRequest.httpUrl());
 			Response response = client.newCall(httpRequest).execute();
 			// Not a success - notify caller via exception
 			if (!response.isSuccessful()) {
-				throw new AssemblaAPIException("Error making request" , response.code());
+				throw new AssemblaAPIException("Error making request:" + response.message() , response.code());
 			}
 			// No content or request has not requested a type, so return null
 			// object

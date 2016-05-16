@@ -79,12 +79,14 @@ public class AssemblaClientTest {
 	public void createPagedRequestTest() {
 		//Given a new paged resquest
 		PagedAssemblaRequest pagedRequest = new PagedAssemblaRequest("paged_test",Ticket[].class);
+		pagedRequest.addParam("test", "value");
 
 		//When we interogate the object then all of the values have been initalised to the default value 
 		assertEquals("Default page size is not set correcty", AssemblaConstants.DEFAULT_PAGE_SIZE, pagedRequest.getPageSize());
 		assertEquals("Default page is not set correcty", AssemblaConstants.DEFAULT_PAGE, pagedRequest.getPage());
 		
 		StringBuilder sb = new StringBuilder("paged_test?")
+		.append("test=value&")
 		.append(AssemblaConstants.PAGE_PARAMETER)
 		.append("=")
 		.append(pagedRequest.getPage())

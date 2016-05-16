@@ -17,12 +17,15 @@ import com.assembla.CustomReport;
 import com.assembla.Document;
 import com.assembla.Tag;
 import com.assembla.Ticket;
+import com.assembla.client.AssemblaConstants;
 import com.assembla.client.AssemblaRequest;
 import com.assembla.client.AssemblaResponse;
 import com.assembla.client.PagedAssemblaRequest;
 import com.assembla.client.PagedIterator;
 import com.assembla.exception.AssemblaAPIException;
 import com.assembla.service.TicketService;
+import com.assembla.service.TicketService.TicketReport;
+import com.assembla.service.TicketService.TicketStatusFilter;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TicketServiceTest extends ServiceTest {
@@ -87,11 +90,32 @@ public class TicketServiceTest extends ServiceTest {
 	}
 	
 	@Test
+	public void getTicketByMilestoneWithTicketFilterTest() {
+		//Given a request to get all tickets without a mile stone , when we look at the iterator returned
+		PagedIterator<Ticket> tickets = ticketService.getTicketsByMilestone("123", TicketStatusFilter.ALL);
+		// Then we expect it to wrap a paged request equal to this request
+		PagedAssemblaRequest request = new PagedAssemblaRequest("/spaces/test_space_id/tickets/milestone/123.json", Ticket[].class);
+		request.addParam(AssemblaConstants.TICKET_STATUS_PARAMETER, TicketStatusFilter.ALL.toString());
+		assertEquals(request, tickets.getRequest());
+	}
+	
+	
+	@Test
 	public void getAllTicketsTest() {
 		//Given a request to get all tickets
 		PagedIterator<Ticket> tickets = ticketService.getAllTickets();
 		//When we look at the request made on client, then we expect it to be equal to this request
 		PagedAssemblaRequest request = new PagedAssemblaRequest("/spaces/test_space_id/tickets.json", Ticket[].class);
+		assertEquals(request, tickets.getRequest());
+	}	
+	
+	@Test
+	public void getAllTicketsWithReportIdTest() {
+		//Given a request to get all tickets
+		PagedIterator<Ticket> tickets = ticketService.getAllTickets(TicketReport.ALL);
+		//When we look at the request made on client, then we expect it to be equal to this request
+		PagedAssemblaRequest request = new PagedAssemblaRequest("/spaces/test_space_id/tickets.json", Ticket[].class);
+		request.addParam(AssemblaConstants.REPORT_PARAMETER, TicketReport.ALL.getReportId());
 		assertEquals(request, tickets.getRequest());
 	}	
 	

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 public final class PagedIterator<T> implements Iterator<Collection<T>>, Iterable<Collection<T>> {
@@ -46,12 +47,14 @@ public final class PagedIterator<T> implements Iterator<Collection<T>>, Iterable
 		
 		lastRequest = request;
 		if(!items.isEmpty()) {
+			Map<String,Object> parameters = request.getParameters();
 			request = new PagedAssemblaRequest(
 				request.getUri(), 
 				request.getType().get(), 
 				request.getPage() + 1,
 				request.getPageSize()
 			);
+			parameters.keySet().stream().forEach(k -> request.addParam(k, parameters.get(k)));
 		}
 		
 		return items;
