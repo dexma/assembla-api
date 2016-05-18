@@ -76,7 +76,7 @@ public class TicketService extends AbstractBaseService {
 	public PagedIterator<Ticket> getTicketsByMilestone(String milestoneId, TicketStatusFilter filter) {
 		String uri = format(AssemblaConstants.TICKETS_BY_MILESTONE, super.getSpaceId(), milestoneId);
 		PagedAssemblaRequest request = new PagedAssemblaRequest(uri, Ticket[].class);
-		request.addParam(AssemblaConstants.TICKET_STATUS_PARAMETER, filter.toString());
+		request.addParam(AssemblaConstants.TICKET_STATUS_PARAMETER, filter.toString().toLowerCase());
 		return new PagedIterator<>(request, client);
 	}
 

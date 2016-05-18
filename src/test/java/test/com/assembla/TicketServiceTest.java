@@ -80,7 +80,7 @@ public class TicketServiceTest extends ServiceTest {
 		assertEquals(request, tickets.getRequest());
 	}
 	
-	@Test
+	@Testgit
 	public void getTicketByMilestoneTest() {
 		//Given a request to get all tickets without a mile stone , when we look at the iterator returned
 		PagedIterator<Ticket> tickets = ticketService.getTicketsByMilestone("123");
@@ -95,7 +95,7 @@ public class TicketServiceTest extends ServiceTest {
 		PagedIterator<Ticket> tickets = ticketService.getTicketsByMilestone("123", TicketStatusFilter.ALL);
 		// Then we expect it to wrap a paged request equal to this request
 		PagedAssemblaRequest request = new PagedAssemblaRequest("/spaces/test_space_id/tickets/milestone/123.json", Ticket[].class);
-		request.addParam(AssemblaConstants.TICKET_STATUS_PARAMETER, TicketStatusFilter.ALL.toString());
+		request.addParam(AssemblaConstants.TICKET_STATUS_PARAMETER, TicketStatusFilter.ALL.toString().toLowerCase());
 		assertEquals(request, tickets.getRequest());
 	}
 	
