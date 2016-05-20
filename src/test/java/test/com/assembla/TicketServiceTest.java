@@ -80,7 +80,7 @@ public class TicketServiceTest extends ServiceTest {
 		assertEquals(request, tickets.getRequest());
 	}
 	
-	@Testgit
+	@Test
 	public void getTicketByMilestoneTest() {
 		//Given a request to get all tickets without a mile stone , when we look at the iterator returned
 		PagedIterator<Ticket> tickets = ticketService.getTicketsByMilestone("123");

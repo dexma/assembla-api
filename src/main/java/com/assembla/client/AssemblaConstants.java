@@ -102,6 +102,10 @@ public interface AssemblaConstants {
 	 */
 	String ATTACHMENTS_FOR_TICKET = "/spaces/%s/tickets/%d/attachments.json";
 	/**
+	 * URI for retreiving attachments associated with a ticket
+	 */
+	String FILE_FOR_ATTACHMENT = "/spaces/%s/documents/%s/download";
+	/**
 	 * URI for retreiving a list of user and team reports available for the
 	 * space.
 	 */
