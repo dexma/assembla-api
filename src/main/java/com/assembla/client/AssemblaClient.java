@@ -1,7 +1,10 @@
 package com.assembla.client;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import com.assembla.exception.AssemblaAPIException;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -18,7 +21,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
-public class AssemblaClient  {
+public class AssemblaClient {
 
 	/**
 	 * API Key
@@ -41,9 +44,9 @@ public class AssemblaClient  {
 	 * URL for api calls
 	 */
 	protected String baseURL;
-	
+
 	/**
-	 * MediaType for JSON media type 
+	 * MediaType for JSON media type
 	 */
 	protected static final MediaType JSON = MediaType.parse(AssemblaConstants.JSON_MEDIA_TYPE);
 
@@ -68,24 +71,24 @@ public class AssemblaClient  {
 	public String getKey() {
 		return apiKey;
 	}
-	
+
 	public String getBaseURL() {
 		return baseURL;
 	}
-	
+
 	public AssemblaResponse doGet(AssemblaRequest request) {
 		Request.Builder builder = new Request.Builder();
 		addCommon(request, builder);
 		return doRequest(builder.build(), request);
 	}
-	
+
 	public AssemblaResponse doPut(AssemblaRequest request) {
 		Request.Builder builder = new Request.Builder();
 		addCommon(request, builder);
 		builder.put(createJSONBody(request));
 		return doRequest(builder.build(), request);
 	}
-	
+
 	public AssemblaResponse doPost(AssemblaRequest request) {
 		Request.Builder builder = new Request.Builder();
 		addCommon(request, builder);
@@ -102,27 +105,41 @@ public class AssemblaClient  {
 
 	protected AssemblaResponse doRequest(Request httpRequest, AssemblaRequest request) {
 		Optional<Class<?>> type = request.getType();
-		Reader charStream = null;
 		try {
-			System.out.println("Making request:"+httpRequest.httpUrl());
+			System.out.println("Making request:" + httpRequest.httpUrl());
 			Response response = client.newCall(httpRequest).execute();
-			// Not a success - notify caller via exception
-			if (!response.isSuccessful()) {
-				throw new AssemblaAPIException("Error making request:" + response.message() , response.code());
-			}
-			// No content or request has not requested a type, so return null
-			// object
-			if (response.code() == AssemblaConstants.NO_CONTENT || !type.isPresent()) {
-				return new AssemblaResponse();
-			}
-			// Otherwise we can return the response in requested format
-			charStream = response.body().charStream();
-			return new AssemblaResponse(mapper.readValue(charStream, type.get()), type.get());
-			
+			return handleResponse(response, type);
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new AssemblaAPIException("Error making request" , e);
-		} finally {
+			throw new AssemblaAPIException("Error making request", e);
+		} 
+	}
+
+	protected AssemblaResponse handleResponse(Response response, Optional<Class<?>> type) throws IOException{
+		// Not a success - notify caller via exception
+		if (!response.isSuccessful()) {
+			throw new AssemblaAPIException("Error making request:" + response.message(), response.code());
+		}
+		// No content or request has not requested a type, so return null
+		// object
+		if (response.code() == AssemblaConstants.NO_CONTENT || !type.isPresent()) {
+			return new AssemblaResponse();
+		}
+		// Otherwise we can return the response in requested format
+		if (InputStream.class.equals(type))
+			parseByteResponse(response);
+		return parseJSONResponse(response, type);
+	}
+
+	private AssemblaResponse parseJSONResponse(Response response, Optional<Class<?>> type) throws IOException {
+		Reader charStream = null;
+		try {
+			charStream = response.body().charStream();
+			return new AssemblaResponse(mapper.readValue(charStream, type.get()), type.get());
+		} catch (IOException e) {
+			throw e;
+		}
+		finally {
 			try {
 				if (charStream != null) {
 					charStream.close();
@@ -132,6 +149,24 @@ public class AssemblaClient  {
 		}
 	}
 	
+	private AssemblaResponse parseByteResponse(Response response) throws IOException {
+		InputStream inputStream = null;
+		try {
+			inputStream = response.body().byteStream();
+			return new AssemblaResponse(inputStream, InputStream.class);
+		} catch (IOException e) {
+			throw e;
+		}
+		finally {
+			try {
+				if (inputStream != null) {
+					inputStream.close();
+				}
+			} catch (IOException ioe) {
+			}
+		}
+	}
+
 	private void addCommon(AssemblaRequest request, Request.Builder rb) {
 		rb.url(this.getBaseURL() + request.getFullURI());
 		rb.header(AssemblaConstants.HEADER_API_KEY, this.apiKey);
@@ -139,9 +174,7 @@ public class AssemblaClient  {
 	}
 
 	private RequestBody createJSONBody(AssemblaRequest request) {
-		return request.getBody()
-				.map(e -> createRequest(JSON, e))
-				.orElse(createRequest(null, new byte[0]));
+		return request.getBody().map(e -> createRequest(JSON, e)).orElse(createRequest(null, new byte[0]));
 	}
 
 	private RequestBody createRequest(MediaType type, Object request) {

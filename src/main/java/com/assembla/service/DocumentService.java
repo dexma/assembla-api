@@ -21,7 +21,12 @@ public class DocumentService extends AbstractBaseService {
 		String uri = format(AssemblaConstants.FILE_FOR_ATTACHMENT, super.getSpaceId(), fileId);
 		AssemblaRequest request = new AssemblaRequest(uri, InputStream.class);
 		InputStream stream = super.get(request, format("No document with id %s exists.", fileId));
-		return StreamUtil.stream2file(stream);
+		try {
+			return StreamUtil.stream2file(stream);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	} 
 
 }
