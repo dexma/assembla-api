@@ -1,5 +1,6 @@
 package com.assembla.client;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -7,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.assembla.exception.AssemblaAPIException;
+import com.assembla.utils.StreamUtil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -126,9 +128,14 @@ public class AssemblaClient {
 			return new AssemblaResponse();
 		}
 		// Otherwise we can return the response in requested format
-		if (InputStream.class.equals(type))
-			parseByteResponse(response);
-		return parseJSONResponse(response, type);
+		if (isFile(type))
+			return parseByteResponse(response);
+		else
+			return parseJSONResponse(response, type);
+	}
+
+	public static boolean isFile(Optional<Class<?>> type) {
+		return type.map(File.class::equals).orElse(false);
 	}
 
 	private AssemblaResponse parseJSONResponse(Response response, Optional<Class<?>> type) throws IOException {
@@ -153,7 +160,8 @@ public class AssemblaClient {
 		InputStream inputStream = null;
 		try {
 			inputStream = response.body().byteStream();
-			return new AssemblaResponse(inputStream, InputStream.class);
+			File file = StreamUtil.stream2file(inputStream);
+			return new AssemblaResponse(file, File.class);
 		} catch (IOException e) {
 			throw e;
 		}

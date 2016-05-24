@@ -4,6 +4,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -23,10 +24,10 @@ public class DocumentServiceTest extends ServiceTest {
 	private DocumentService documentService;
 
 	@Before
-	public void setup() {
+	public void setup() throws IOException {
 		documentService = new DocumentService(assemblaClient, TEST_SPACE_ID);
 		when(assemblaClient.doGet(Matchers.any(AssemblaRequest.class)))
-				.thenReturn(new AssemblaResponse(new ByteArrayInputStream("dummy".getBytes()), InputStream.class));
+				.thenReturn(new AssemblaResponse(File.createTempFile("aaaaaaaaaaaaa",".tmp")));
 	}
 
 	@Test
@@ -35,7 +36,7 @@ public class DocumentServiceTest extends ServiceTest {
 		documentService.getFile("123");
 		// When we make a request then it's equal to this request
 		AssemblaRequest request = new AssemblaRequest("/spaces/test_space_id/documents/123/download",
-				InputStream.class);
+				File.class);
 		verify(assemblaClient).doGet(request);
 	}
 

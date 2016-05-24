@@ -3,6 +3,8 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -162,6 +164,19 @@ public class AssemblaClientTest {
 	@Test(expected=IllegalArgumentException.class)
 	public void pagedRequestHasToBeArrayTest() {
 		new PagedAssemblaRequest("paged_test", Ticket.class);
+	}
+
+	@Test
+	public void isFileType(){
+		//given
+		AssemblaRequest request = new AssemblaRequest("myurl", File.class);
+
+		//when
+		boolean isFile = AssemblaClient.isFile(request.getType());
+
+		//then
+		assertEquals("Unexpected type", true, isFile);
+
 	}
 	
 }
