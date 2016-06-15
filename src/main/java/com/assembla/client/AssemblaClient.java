@@ -108,7 +108,6 @@ public class AssemblaClient {
 	protected AssemblaResponse doRequest(Request httpRequest, AssemblaRequest request) {
 		Optional<Class<?>> type = request.getType();
 		try {
-			System.out.println("Making request:" + httpRequest.httpUrl());
 			Response response = client.newCall(httpRequest).execute();
 			return handleResponse(response, type);
 		} catch (IOException e) {
